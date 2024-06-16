@@ -42,6 +42,9 @@ class ProductController extends Controller
     public function show(string $id)
     {
         $products = $this->productService->getProduct($id);
+        if ($products == null) {
+            return $this->sendError('Product Not Found', [], 404);
+        }
         return $this->sendSuccess('Product Received Successfully', $products);
     }
 
@@ -51,6 +54,9 @@ class ProductController extends Controller
     public function update(ProductUpdateRequest $request, string $id)
     {
         $product = $this->productService->updateProduct($id, $request->validated());
+        if (!$product) {
+            return $this->sendError('Product Not Found', [], 404);
+        }
         return $this->sendSuccess('Product Updated Successfully', $product);
     }
 
@@ -60,6 +66,9 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $product = $this->productService->removeProduct($id);
+        if (!$product) {
+            return $this->sendError('Product Not Found', [], 404);
+        }
         return $this->sendSuccess('Product Deleted Successfully');
     }
 }

@@ -23,7 +23,7 @@ class ProductUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required',
-            'price' => 'decimal',
+            'price' => 'numeric|between:0,99999.99',
             'quantity' => 'integer',
             'description' => '',
             'image_path' => '',

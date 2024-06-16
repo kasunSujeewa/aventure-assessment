@@ -13,7 +13,7 @@ class ProductService
     public function getProducts()
     {
         // get all Products
-        return  $this->product->all();
+        return  $this->product->orderBy('created_at', 'desc')->get();
     }
     public function getProduct($id)
     {
@@ -28,13 +28,22 @@ class ProductService
     }
     public function updateProduct($id, $data)
     {
+        $product = $this->getProduct($id);
+        if ($product == null) {
+            return false;
+        }
         //update product
-        $this->product->findOrFail($id)->update($data);
+        $product->update($data);
         return $this->getProduct($id);
     }
     public function removeProduct($id)
     {
+        $product = $this->getProduct($id);
+        if ($product == null) {
+            return false;
+        }
         //delete product
         $this->product->findOrFail($id)->delete();
+        return true;
     }
 }
