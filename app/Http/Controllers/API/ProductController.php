@@ -33,7 +33,15 @@ class ProductController extends Controller
     public function store(ProductStoreRequest $request)
     {
         $product = $this->productService->createProduct($request->validated());
-        return $this->sendSuccess('Product Created Successfully', $product, 201);
+        if($product['error'])
+        {
+            return $this->sendError($product['data'], [], 500);
+        }
+        else
+        {
+            
+            return $this->sendSuccess('Product Created Successfully', $product['data'], 201);
+        }
     }
 
     /**
@@ -54,10 +62,10 @@ class ProductController extends Controller
     public function update(ProductUpdateRequest $request, string $id)
     {
         $product = $this->productService->updateProduct($id, $request->validated());
-        if (!$product) {
-            return $this->sendError('Product Not Found', [], 404);
+        if ($product['error']) {
+            return $this->sendError($product['data'], [], 404);
         }
-        return $this->sendSuccess('Product Updated Successfully', $product);
+        return $this->sendSuccess('Product Updated Successfully', $product['data']);
     }
 
     /**

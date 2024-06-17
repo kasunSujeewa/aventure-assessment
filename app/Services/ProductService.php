@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
+
 
 class ProductService
 {
@@ -22,19 +24,33 @@ class ProductService
     }
     public function createProduct($data)
     {
-        //create product
-        $created_product = $this->product->create($data);
-        return $created_product;
+        try {
+            DB::beginTransaction();
+
+            $created_product = $this->product->create($data);
+            DB::commit();
+            return ['error' => false, 'data' => $created_product];
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return ['error' => true, 'data' => $th->getMessage()];
+        }
     }
     public function updateProduct($id, $data)
     {
-        $product = $this->getProduct($id);
-        if ($product == null) {
-            return false;
+        try {
+            DB::beginTransaction();
+
+            $product = $this->getProduct($id);
+            if ($product == null) {
+                return ['error' => true, 'data' => 'Product Not Found'];
+            }
+            $product->update($data);
+            DB::commit();
+            return ['error' => false, 'data' => $this->getProduct($id)];
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return ['error' => true, 'data' => $th->getMessage()];
         }
-        //update product
-        $product->update($data);
-        return $this->getProduct($id);
     }
     public function removeProduct($id)
     {
